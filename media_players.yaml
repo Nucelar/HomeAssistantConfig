@@ -1,0 +1,26 @@
+- platform: universal
+  name: TV Salón
+  children:
+    - media_player.tv_salon
+  commands:
+    turn_on:
+      service: switch.turn_on
+      data:
+        entity_id: switch.tv_salon_boton_encendido
+    turn_off:
+      service: switch.turn_off
+      data:
+        entity_id: switch.tv_salon_boton_encendido
+- platform: universal
+  name: PC Enrique
+  children:
+    - media_player.enrique_pc
+  commands:
+    turn_on:
+      service: switch.turn_on
+      data:
+        entity_id: button.despierta_enrique_pc
+    turn_off:
+      service: switch.turn_off
+      data:
+        entity_id: button.enrique_pc_shutdown

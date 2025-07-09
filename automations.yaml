@@ -1,0 +1,818 @@
+- id: '1730066203398'
+  alias: Buenas noches
+  description: ''
+  triggers:
+  - trigger: conversation
+    command: Buenas noches
+  - trigger: state
+    entity_id:
+    - input_boolean.sleep_mode
+    to: 'on'
+  conditions: []
+  actions:
+  - action: media_player.turn_off
+    metadata: {}
+    data: {}
+    target:
+      device_id: a4063c799bac0c1ab813771b252f4365
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      area_id: dormitorio
+  mode: single
+- id: '1730117014284'
+  alias: Cambio de ocupación Casa
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - zone.home
+    to: '0'
+    id: nobody_home
+  - trigger: numeric_state
+    entity_id:
+    - zone.home
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+    above: 0
+  conditions:
+  - condition: state
+    entity_id: sensor.dispositivos_invitados
+    state: '0'
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - nobody_home
+    then:
+    - action: light.turn_off
+      data: {}
+      target:
+        entity_id: all
+    - type: turn_off
+      device_id: 145df6e31d5dc78f48708a759bb97ab9
+      entity_id: 3eec7ef93e5c627d74a0624c08c6bfc3
+      domain: remote
+    - action: switch.turn_off
+      data: {}
+      target:
+        entity_id: switch.tv_salon_boton_encendido
+    - action: camera.turn_on
+      metadata: {}
+      data: {}
+      target:
+        device_id: f103303c742b4e94255108656630f1f5
+    - action: camera.enable_motion_detection
+      metadata: {}
+      data: {}
+      target:
+        device_id: f103303c742b4e94255108656630f1f5
+    else:
+    - action: camera.turn_off
+      metadata: {}
+      data: {}
+      target:
+        device_id: f103303c742b4e94255108656630f1f5
+  mode: single
+- id: '1730117345474'
+  alias: Termostato - Presencia
+  description: Desactiva la calefacción cuando no hay nadie y la activa en caso contrario
+  triggers:
+  - trigger: state
+    entity_id:
+    - zone.home
+    to: '0'
+    id: Nadie en casa
+  - trigger: numeric_state
+    entity_id:
+    - zone.home
+    above: 0
+  conditions:
+  - condition: state
+    entity_id: sensor.dispositivos_invitados
+    state: '0'
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - Nadie en casa
+    then:
+    - device_id: 57cc8b68644c8146ef2e35398df5d591
+      domain: climate
+      entity_id: a0670a89bbd04d77535cabd227bc2d53
+      type: set_preset_mode
+      preset_mode: away
+    else:
+    - device_id: 57cc8b68644c8146ef2e35398df5d591
+      domain: climate
+      entity_id: a0670a89bbd04d77535cabd227bc2d53
+      type: set_preset_mode
+      preset_mode: schedule
+  mode: single
+- id: '1730150015270'
+  alias: 'Power: Turn on room on home office days'
+  description: ''
+  triggers:
+  - trigger: time
+    at: 08:00:00
+  conditions:
+  - condition: time
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+  actions:
+  - action: input_boolean.turn_on
+    target:
+      entity_id: input_boolean.power_room
+    data: {}
+  mode: single
+- id: '1730237427612'
+  alias: Power Room Toggle
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.power_bedroom
+    from: 'off'
+    to: 'on'
+    id: power-on
+  - trigger: state
+    entity_id:
+    - input_boolean.power_bedroom
+    from: 'on'
+    to: 'off'
+    id: power-off
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - power-on
+      sequence:
+      - action: switch.turn_on
+        data: {}
+        target:
+          entity_id: switch.luz_dormitorio
+    - conditions:
+      - condition: trigger
+        id:
+        - power-off
+      sequence:
+      - action: media_player.turn_off
+        metadata: {}
+        data: {}
+        target:
+          device_id: a4063c799bac0c1ab813771b252f4365
+      - action: light.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: light.luces_del_dormitorio
+  mode: single
+- id: '1730240581487'
+  alias: Toggle sleep mode
+  description: ''
+  triggers:
+  - domain: mqtt
+    device_id: 4447510a97fd44fea1861921011a63b3
+    type: action
+    subtype: single
+    trigger: device
+  conditions: []
+  actions:
+  - action: input_boolean.toggle
+    target:
+      entity_id: input_boolean.sleep_mode
+    data: {}
+  mode: single
+- id: '1730240792371'
+  alias: Toggle bedroom lights on double press
+  description: ''
+  triggers:
+  - domain: mqtt
+    device_id: 4447510a97fd44fea1861921011a63b3
+    type: action
+    subtype: double
+    trigger: device
+  conditions: []
+  actions:
+  - action: light.toggle
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.luces_del_dormitorio
+  mode: single
+- id: '1730240882355'
+  alias: Turn bedroom off on long press
+  description: ''
+  triggers:
+  - device_id: 4447510a97fd44fea1861921011a63b3
+    domain: mqtt
+    type: hold
+    subtype: button
+    trigger: device
+  conditions: []
+  actions:
+  - action: light.turn_off
+    metadata: {}
+    data:
+      transition: 5
+    target:
+      area_id: dormitorio
+  - action: media_player.turn_off
+    metadata: {}
+    data: {}
+    target:
+      device_id: a4063c799bac0c1ab813771b252f4365
+  mode: single
+- id: '1730272104876'
+  alias: Copia de seguridad diaria
+  description: ''
+  triggers:
+  - trigger: time
+    at: 02:00:00
+  conditions: []
+  actions:
+  - action: hassio.backup_full
+    data:
+      compressed: true
+      homeassistant_exclude_database: false
+      location: Backup
+  mode: single
+- id: '1730303723406'
+  alias: Activación luz cocina por movimiento
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.sensores_de_movimiento_cocina
+    to: 'on'
+    id: movement-detected
+  - trigger: state
+    entity_id:
+    - binary_sensor.sensores_de_movimiento_cocina
+    to: 'off'
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  conditions: []
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - movement-detected
+    then:
+    - if:
+      - condition: numeric_state
+        entity_id: sensor.sensor_movimiento_cocina_2_illuminance
+        below: 12
+      - condition: sun
+        before: sunrise
+        after: sunset
+        enabled: false
+      then:
+      - action: light.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: light.kitchen
+    else:
+    - action: light.turn_off
+      metadata: {}
+      data: {}
+      enabled: true
+      target:
+        entity_id: light.kitchen
+  mode: single
+- id: '1730316451027'
+  alias: Send notification to phone if main door open
+  description: ''
+  triggers:
+  - type: opened
+    device_id: 6622499deaa53f7d4b62a939ec041dd0
+    entity_id: e335b0cf178f6552136ef95094c02e20
+    domain: binary_sensor
+    trigger: device
+    for:
+      hours: 0
+      minutes: 20
+      seconds: 0
+  conditions: []
+  actions:
+  - action: notify.mobile_app_oneplus_enrique
+    data:
+      message: ¡La puerta principal está abierta!
+  mode: single
+- id: '1730317436724'
+  alias: Lights Sunrise Sunset
+  description: ''
+  triggers:
+  - trigger: sun
+    event: sunrise
+    offset: 0
+    id: sunrise
+  - trigger: sun
+    event: sunset
+    offset: 00:30:00
+  conditions: []
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - sunrise
+    then:
+    - action: light.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: light.livingroom_behind_sofa
+    else:
+    - action: light.turn_on
+      metadata: {}
+      data:
+        kelvin: 2784
+        brightness_pct: 30
+      target:
+        entity_id: light.livingroom_behind_sofa
+  mode: single
+- id: '1730416435508'
+  alias: Activación luz dormitorio ocupación
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - sensor.fitbit_ble
+    - sensor.oneplus_enrique_ble
+    from: dormitorio
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+  - trigger: state
+    entity_id:
+    - binary_sensor.sensor_movimiento_dormitorio_occupancy
+    to: 'on'
+    id: movement-detected
+  conditions: []
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - movement-detected
+    - condition: sun
+      after: sunset
+    - condition: state
+      entity_id: input_boolean.sleep_mode
+      state: 'off'
+    then:
+    - action: input_boolean.turn_on
+      metadata: {}
+      data: {}
+      target:
+        entity_id: input_boolean.power_bedroom
+    else:
+    - action: input_boolean.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: input_boolean.power_bedroom
+  mode: single
+- id: '1730416828912'
+  alias: Alexa sleep mode
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.sleep_mode
+    to: 'on'
+    id: sleep_mode_on
+  - trigger: state
+    entity_id:
+    - input_boolean.sleep_mode
+    to: 'off'
+  conditions: []
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - sleep_mode_on
+    then:
+    - action: notify.alexa_media_echo_dot_de_enrique
+      metadata: {}
+      data:
+        message: Buenas noches
+    - action: media_player.media_stop
+      target:
+        device_id: 662b83eb8a13dfafabed32599843c622
+      data: {}
+    - action: light.turn_off
+      metadata: {}
+      data: {}
+      target:
+        area_id: dormitorio
+    else:
+    - action: script.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: script.wake_up
+    - action: media_player.media_pause
+      target:
+        device_id: 662b83eb8a13dfafabed32599843c622
+      data: {}
+    - action: notify.alexa_media_echo_dot_de_enrique
+      metadata: {}
+      data:
+        message: Buenos días
+  mode: single
+- id: '1730732850319'
+  alias: Activación luz baño principal por movimiento
+  description: ''
+  use_blueprint:
+    path: homeassistant/motion_light.yaml
+    input:
+      motion_entity: binary_sensor.sensor_movimiento_bano_principal_movimiento
+      light_target:
+        entity_id: light.main_bathroom
+      no_motion_wait: 300
+- id: '1730754227167'
+  alias: Despertador Oficina
+  description: ''
+  triggers:
+  - trigger: time
+    at: input_datetime.alarma_oficina
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.workday_sensor
+    state: 'on'
+  - condition: state
+    entity_id: calendar.compartido_familia
+    state: Oficina
+    attribute: message
+  - condition: state
+    entity_id: person.enrique_albaladejo_barambio
+    state: home
+  - condition: state
+    entity_id: input_boolean.alarma_oficina
+    state: 'on'
+  actions:
+  - action: script.turn_on
+    target:
+      entity_id: script.wake_up
+    data: {}
+  mode: single
+- id: '1730755022272'
+  alias: Activación PC por voz
+  description: ''
+  triggers:
+  - trigger: conversation
+    command:
+    - Apaga el ordenador
+    - Apaga el PC
+    id: turn-off
+  - trigger: conversation
+    command:
+    - Hiberna el PC
+    - Hiberna el ordenador
+    id: hibernate
+  - trigger: conversation
+    command:
+    - Suspende el PC
+    - Suspende el ordenador
+    - Bloquea el PC
+    - Bloquea el ordenador
+    id: lock
+  - trigger: conversation
+    command:
+    - Enciende el ordenador
+    - Enciende el PC
+    id: wake-up
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - turn-off
+      sequence:
+      - action: button.press
+        metadata: {}
+        data: {}
+        target:
+          entity_id: button.enrique_pc_shutdown
+    - conditions:
+      - condition: trigger
+        id:
+        - hibernate
+      sequence:
+      - action: button.press
+        metadata: {}
+        data: {}
+        target:
+          entity_id: button.enrique_pc_hibernate
+    - conditions:
+      - condition: trigger
+        id:
+        - lock
+      sequence:
+      - action: button.press
+        metadata: {}
+        data: {}
+        target:
+          entity_id: button.enrique_pc_lock
+    - conditions:
+      - condition: trigger
+        id:
+        - wake-up
+      sequence:
+      - device_id: 2f356e3456b64d909e5dc7a9609333f3
+        domain: button
+        entity_id: 2f78642e338a55c7d6a11c77e10e4fcf
+        type: press
+  mode: single
+- id: '1730845483122'
+  alias: Despertador Teletrabajo
+  description: ''
+  triggers:
+  - trigger: time
+    at: input_datetime.alarma_teletrabajo
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.workday_sensor
+    state: 'on'
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: calendar.compartido_familia
+      attribute: message
+      state: Oficina
+  - condition: state
+    entity_id: person.enrique_albaladejo_barambio
+    state: home
+  - condition: state
+    entity_id: input_boolean.alarma_teletrabajo
+    state: 'on'
+  actions:
+  - action: script.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: script.wake_up
+  mode: single
+- id: '1731010986131'
+  alias: 'Alarma: Activación'
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.sensor_de_puerta_principal_apertura
+    from: 'off'
+    to: 'on'
+  conditions:
+  - condition: state
+    entity_id: alarm_control_panel.ha_alarm
+    state: armed_away
+  actions:
+  - action: persistent_notification.create
+    metadata: {}
+    data:
+      message: ¡Se ha abierto la puerta principal! Alarma activada
+      title: Posible intruso
+  - action: notify.mobile_app_oneplus_enrique
+    data:
+      message: ¡Alerta de intruso! ¡Se ha detectado la apertura de la puerta principal!
+      title: ¡ALERTA DE INTRUSO!
+  - action: script.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: script.alarma_bucle_luces
+  - sequence:
+    - action: media_player.volume_set
+      metadata: {}
+      data:
+        volume_level: 1
+      target:
+        device_id: ef8fe03d0202e2818d60de113f6b7316
+    - repeat:
+        count: 2
+        sequence:
+        - action: tts.speak
+          metadata: {}
+          data:
+            cache: true
+            media_player_entity_id: media_player.en_todas_partes
+            message: '!ALERTA DE INTRUSO! ¡Se te ha grabado en cámara y se ha llamado
+              a la policía!'
+            language: es-ES
+          target:
+            entity_id: tts.home_assistant_cloud
+    - repeat:
+        sequence:
+        - action: media_player.play_media
+          metadata: {}
+          data:
+            media_content_id: media-source://media_source/local/NASMedia/Sonidos/alarm-26718.mp3
+            media_content_type: audio/mpeg
+          target:
+            entity_id: media_player.en_todas_partes
+        while:
+        - condition: state
+          entity_id: alarm_control_panel.ha_alarm
+          state: armed_away
+    - action: media_player.turn_off
+      metadata: {}
+      data: {}
+      target:
+        device_id: ef8fe03d0202e2818d60de113f6b7316
+  mode: single
+- id: '1731443676067'
+  alias: Enciende TV dormitorio
+  description: ''
+  triggers:
+  - trigger: conversation
+    command:
+    - Enciende la tele del dormitorio
+    - Enciende Fire TV
+    - Enciende la televisión del dormitorio
+  conditions: []
+  actions:
+  - action: button.press
+    metadata: {}
+    data: {}
+    target:
+      entity_id: button.wake_on_lan_a0_6f_aa_70_54_1c
+  mode: single
+- id: '1731960172649'
+  alias: Activación luces salón
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.sensor_movimiento_salon_occupancy
+    to: 'on'
+    id: detected
+  - trigger: state
+    entity_id:
+    - binary_sensor.sensor_movimiento_salon_occupancy
+    to: 'off'
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  conditions: []
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - detected
+    then:
+    - if:
+      - condition: numeric_state
+        entity_id: sensor.sensor_movimiento_salon_illuminance
+        below: 8
+      - condition: sun
+        before: sunrise
+        after: sunset
+      then:
+      - action: light.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: light.livingroom
+    else:
+    - action: light.turn_off
+      metadata: {}
+      data: {}
+      target:
+        entity_id: light.livingroom
+  mode: single
+- id: '1733656843495'
+  alias: Lavadora en marcha
+  description: ''
+  triggers:
+  - trigger: numeric_state
+    entity_id:
+    - sensor.enchufe_lavadora_power
+    above: 1.5
+    id: lavadora_funcionando
+  - trigger: numeric_state
+    entity_id:
+    - sensor.enchufe_lavadora_power
+    below: 1.5
+  conditions: []
+  actions:
+  - if:
+    - condition: trigger
+      id:
+      - lavadora_funcionando
+    then:
+    - action: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.lavadora_on_off
+      data: {}
+    else:
+    - action: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.lavadora_on_off
+      data: {}
+  mode: single
+- id: '1733657446246'
+  alias: Lavadora finalizada
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.lavadora_on_off
+    to: 'off'
+  conditions: []
+  actions:
+  - action: persistent_notification.create
+    metadata: {}
+    data:
+      message: '¡Saca la ropa de la lavadora! '
+  - if:
+    - condition: zone
+      entity_id: device_tracker.oneplus_enrique
+      zone: zone.home
+    then:
+    - action: tts.speak
+      metadata: {}
+      data:
+        cache: true
+        message: 'La lavadora ha terminado. ¡Cuelga la ropa! '
+        media_player_entity_id: media_player.echo_dot_dormitorio
+      target:
+        entity_id: tts.home_assistant_cloud
+  - action: notify.mobile_app_oneplus_enrique
+    data:
+      title: Lavadora finalizada
+      message: 'La lavadora ha finalizado. ¡Cuelga la ropa! '
+  - action: notify.alexa_media_echo_dot_de_enrique
+    data:
+      message: 'La lavadora ha finalizado. ¡Cuelga la ropa! '
+      title: Lavadora finalizada
+  mode: single
+- id: '1743615041431'
+  alias: Nevera apagada
+  description: ''
+  triggers:
+  - type: turned_off
+    device_id: 9af8de38df9387399dbcf307c25c0231
+    entity_id: 3417feee2eada099ae86e5edf88595ed
+    domain: switch
+    trigger: device
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  conditions: []
+  actions:
+  - action: notify.mobile_app_oneplus_enrique
+    metadata: {}
+    data:
+      message: '¡La nevera está apagada! ¡Cuidado con la comida! '
+      title: Nevera apagada
+  mode: single
+- id: '1751965925791'
+  alias: Enrique PC play/pause
+  description: ''
+  triggers:
+  - trigger: event
+    event_type: call_service
+    event_data:
+      domain: media_player
+      service: media_play_pause
+      service_data:
+        entity_id: media_player.enrique_pc
+  conditions: []
+  actions:
+  - action: button.press
+    metadata: {}
+    data: {}
+    target:
+      entity_id: button.enrique_pc_mediaplaypause
+  mode: single
+- id: '1752090385795'
+  alias: "\U0001F6D2Improved Shopping List Sync! v3"
+  description: ''
+  use_blueprint:
+    path: TitoTB/Improved_shopping_list_sync_v3.yaml
+    input:
+      sync_list: todo.google_keep_einkaufsliste

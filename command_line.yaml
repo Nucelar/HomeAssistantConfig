@@ -1,0 +1,23 @@
+- sensor:
+    name: "Shopping list (items to buy)"
+    command: >
+        jq '{list: ([.[] | select(.complete==false) | .name] | join(","))}' .shopping_list.json
+    value_template: >
+        {% if value_json.list == "" %}0
+        {% else %}{{ value_json.list.split(',') | length }}
+        {% endif %}
+    json_attributes:
+        - list
+    scan_interval: 1
+
+- sensor:
+    name: "Shopping list (bought items)"
+    command: >
+        jq '{list: ([.[] | select(.complete==true) | .name] | join(","))}' .shopping_list.json
+    value_template: >
+        {% if value_json.list == "" %}0
+        {% else %}{{ value_json.list.split(',') | length }}
+        {% endif %}
+    json_attributes:
+        - list
+    scan_interval: 1

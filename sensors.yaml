@@ -1,0 +1,51 @@
+- platform: mqtt_room
+  name: "Fitbit BLE"
+  device_id: "known:c99ef3cfc137"
+  state_topic: "espresense/devices/known:c99ef3cfc137"
+  timeout: 5
+  away_timeout: 120
+- platform: mqtt_room
+  name: "OnePlus Enrique BLE"
+  device_id: "iBeacon:8237a89a-b611-4a87-b698-e5750e922ffe-1-1"
+  state_topic: "espresense/devices/iBeacon:8237a89a-b611-4a87-b698-e5750e922ffe-1-1"
+  timeout: 5
+  away_timeout: 120
+  
+- platform: template
+  sensors:
+    shopping_list_aguacates:
+      friendly_name: "Aguacates"
+      value_template: >
+        {% set product = "Aguacates" %}
+        {% set products = (state_attr('sensor.shopping_list_items_to_buy','list') or '').split(',') %}
+        {%- set items = products | select('equalto', product) | list | length | string -%}
+        {{ items | int }}
+      entity_picture_template: "https://cdn-icons-png.flaticon.com/256/2771/2771201.png"
+      attribute_templates:
+        category: "Fruta" 
+        store: "Carrefour" 
+        total_cost: >
+          {{ (2.54 | float) * (states('sensor.shopping_list_aguacates') | float) }}
+        units: "Aguacates"
+        featured: "Favoritos"
+
+- platform: template
+  sensors:
+    shopping_list_sandia:
+      friendly_name: "Sandía"
+      value_template: >
+        {% set product = "Sandía" %}
+        {% set products = (state_attr('sensor.shopping_list_items_to_buy','list') or '').split(',') %}
+        {%- set items = products | select('equalto', product) | list | length | string -%}
+        {{ items | int }}
+      entity_picture_template: "https://cdn-icons-png.flaticon.com/256/883/883518.png"
+      attribute_templates:
+        category: "Fruta" 
+        store: "Carrefour" 
+        total_cost: >
+          {{ (7.75 | float) * (states('sensor.shopping_list_sandia') | float) }}
+        units: "Sandías"
+        featured: >
+          {% if 10 > now().month > 4 %}Temporada
+          {% else %}false
+          {% endif %} 

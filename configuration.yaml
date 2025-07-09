@@ -1,0 +1,35 @@
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# Load frontend themes from the themes folder
+frontend:
+  themes: !include_dir_merge_named themes
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+sensor: !include sensors.yaml
+media_player: !include media_players.yaml
+
+device_tracker:
+  - platform: tplink_router
+    host: 192.168.0.1
+    username: YOUR_ADMIN_USERNAME
+    password: LD&7H6u!01OS
+    new_device_defaults:
+      track_new_devices: true
+
+alarm_control_panel:
+  - platform: manual
+    code: 2301
+    delay_time: 30
+    arming_time: 30
+    trigger_time: 30
+
+homeassistant:
+  media_dirs:
+    local: "/media"
+  allowlist_external_dirs:
+    - "/media"
+
+command_line: !include command_line.yaml

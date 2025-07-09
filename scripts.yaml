@@ -1,0 +1,215 @@
+wake_up:
+  alias: Wake up
+  sequence:
+  - action: light.turn_on
+    metadata: {}
+    data:
+      brightness_pct: 1
+    target:
+      entity_id: light.lampara_mesita_dormitorio
+  - action: light.turn_on
+    metadata: {}
+    data:
+      brightness_pct: 100
+      transition: 300
+    target:
+      device_id: bd7c5942eaa94a2e2b282bc58f884253
+  - delay:
+      hours: 0
+      minutes: 5
+      seconds: 0
+      milliseconds: 0
+  - action: media_player.volume_set
+    metadata: {}
+    data:
+      volume_level: 0.1
+    target:
+      device_id: 662b83eb8a13dfafabed32599843c622
+  - action: media_player.play_media
+    metadata: {}
+    data:
+      media_content_type: SPOTIFY
+      media_content_id: Jazz morning en aleatorio
+    target:
+      device_id: 662b83eb8a13dfafabed32599843c622
+  description: ''
+  icon: mdi:weather-sunset-up
+nuevo_script:
+  alias: Nuevo script
+  sequence:
+  - action: button.press
+    metadata: {}
+    data: {}
+    target:
+      entity_id: button.enrique_pc_mediaplaypause
+  - action: media_player.select_source
+    metadata: {}
+    data:
+      source: Plex
+    target:
+      entity_id: media_player.this_device
+  description: ''
+alarma_bucle_luces:
+  alias: 'Alarma: Bucle luces'
+  sequence:
+  - repeat:
+      sequence:
+      - action: scene.turn_on
+        metadata: {}
+        target:
+          entity_id: scene.modo_alarma_enciende_luces
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 2
+          milliseconds: 0
+      - action: scene.turn_on
+        metadata: {}
+        target:
+          entity_id: scene.modo_alarma_apaga_luces
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 2
+          milliseconds: 0
+      while:
+      - condition: state
+        entity_id: alarm_control_panel.ha_alarm
+        state: armed_away
+  description: ''
+  icon: mdi:alarm-light
+cycle_light_color:
+  alias: Cycle light color
+  sequence:
+  - repeat:
+      count: 10
+      sequence:
+      - target:
+          entity_id: light.livingroom_behind_sofa
+        data:
+          brightness: 255
+          rgb_color:
+          - 255
+          - 0
+          - 0
+        action: light.turn_on
+      - delay: 00:00:01
+      - target:
+          entity_id: light.livingroom_behind_sofa
+        data:
+          rgb_color:
+          - 0
+          - 255
+          - 0
+        action: light.turn_on
+      - delay: 00:00:01
+      - target:
+          entity_id: light.livingroom_behind_sofa
+        data:
+          rgb_color:
+          - 0
+          - 0
+          - 255
+        action: light.turn_on
+      - delay: 00:00:01
+      - target:
+          entity_id: light.livingroom_behind_sofa
+        data:
+          rgb_color:
+          - 164
+          - 37
+          - 218
+        action: light.turn_on
+      - delay: 00:00:01
+      - target:
+          entity_id: light.livingroom_behind_sofa
+        data:
+          rgb_color:
+          - 255
+          - 128
+          - 0
+        action: light.turn_on
+      - delay: 00:00:01
+      - target:
+          entity_id: light.livingroom_behind_sofa
+        data:
+          rgb_color:
+          - 255
+          - 255
+          - 0
+        action: light.turn_on
+      - delay: 00:00:01
+      - target:
+          entity_id: light.livingroom_behind_sofa
+        data:
+          rgb_color:
+          - 255
+          - 0
+          - 255
+        action: light.turn_on
+      - delay: 00:00:01
+      - target:
+          entity_id: light.livingroom_behind_sofa
+        data:
+          rgb_color:
+          - 0
+          - 255
+          - 255
+        action: light.turn_on
+      - delay: 00:00:01
+  description: ''
+  icon: mdi:palette-swatch
+modo_fiesta_on:
+  alias: 'Modo fiesta: On'
+  sequence:
+  - action: button.press
+    metadata: {}
+    data: {}
+    target:
+      entity_id: button.despierta_tv_salon
+  - wait_for_trigger:
+    - trigger: state
+      entity_id:
+      - media_player.tv_salon_2
+      to: 'on'
+    continue_on_timeout: false
+  - data:
+      entity_id: media_player.tv_salon
+      command: system.launcher/open
+      payload:
+        target: http://homeassistant.local:8123/local/NASMedia/Clips/HD_Epic_Sax_Gandalf.mp4
+    action: webostv.command
+  description: ''
+  icon: mdi:party-popper
+edit_ikea_light:
+  alias: Edit Ikea Light
+  sequence:
+  - action: light.turn_on
+    target:
+      device_id:
+      - 3b41c6c412b2f9cecdbd24892ebb37cf
+    data:
+      brightness_pct: 100
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      device_id: 3b41c6c412b2f9cecdbd24892ebb37cf
+    enabled: true
+  description: Configure Ikea Tradfri Lights
+  icon: mdi:alarm-light-outline
+enciende_aire_acondicionado:
+  sequence:
+  - sequence:
+    - action: remote.send_command
+      metadata: {}
+      data:
+        num_repeats: 0
+        delay_secs: 0.4
+        hold_secs: 0
+        device: Aire acondicionado
+        command: 'On'
+      target:
+        device_id: cfac90679041c6cb33393c11a90f9fa9
+  alias: Enciende aire acondicionado
+  description: ''
