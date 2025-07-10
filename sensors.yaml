@@ -31,6 +31,78 @@
 
 - platform: template
   sensors:
+    shopping_list_yogures:
+      friendly_name: "Yogures"
+      value_template: >
+        {% set product = "Yogures" %}
+        {% set products = (state_attr('sensor.shopping_list_items_to_buy','list') or '').split(',') %}
+        {%- set items = products | select('equalto', product) | list | length | string -%}
+        {{ items | int }}
+      entity_picture_template: "https://cdn-icons-png.flaticon.com/128/1047/1047469.png"
+      attribute_templates:
+        category: "Lácteos" 
+        store: "Lidl" 
+        total_cost: >
+          {{ (2.54 | float) * (states('sensor.shopping_list_yogures') | float) }}
+        units: "Yogures"
+        featured: "Favoritos"
+
+- platform: template
+  sensors:
+    shopping_list_pienso_gato:
+      friendly_name: "Pienso de gato"
+      value_template: >
+        {% set product = "Pienso de gato" %}
+        {% set products = (state_attr('sensor.shopping_list_items_to_buy','list') or '').split(',') %}
+        {%- set items = products | select('equalto', product) | list | length | string -%}
+        {{ items | int }}
+      entity_picture_template: "https://cdn-icons-png.flaticon.com/128/2809/2809799.png"
+      attribute_templates:
+        category: "Animales" 
+        store: "Kiwoko" 
+        total_cost: >
+          {{ (2.54 | float) * (states('sensor.shopping_list_pienso_gato') | float) }}
+        units: "kg"
+        featured: "Favoritos"
+
+- platform: template
+  sensors:
+    shopping_list_comida_humeda_gato:
+      friendly_name: "Comida húmeda de gato"
+      value_template: >
+        {% set product = "Comida húmeda de gato" %}
+        {% set products = (state_attr('sensor.shopping_list_items_to_buy','list') or '').split(',') %}
+        {%- set items = products | select('equalto', product) | list | length | string -%}
+        {{ items | int }}
+      entity_picture_template: "https://cdn-icons-png.flaticon.com/128/8334/8334182.png"
+      attribute_templates:
+        category: "Animales" 
+        store: "Kiwoko" 
+        total_cost: >
+          {{ (2.54 | float) * (states('sensor.shopping_list_comida_humeda_gato') | float) }}
+        units: "latas"
+        featured: "Favoritos"
+
+- platform: template
+  sensors:
+    shopping_list_curry:
+      friendly_name: "Curry"
+      value_template: >
+        {% set product = "Curry" %}
+        {% set products = (state_attr('sensor.shopping_list_items_to_buy','list') or '').split(',') %}
+        {%- set items = products | select('equalto', product) | list | length | string -%}
+        {{ items | int }}
+      entity_picture_template: "https://cdn-icons-png.flaticon.com/128/9667/9667321.png"
+      attribute_templates:
+        category: "Especias" 
+        store: "Lidl"
+        total_cost: >
+          {{ (2.54 | float) * (states('sensor.shopping_list_curry') | float) }}
+        units: "botes"
+        featured: "Favoritos"
+
+- platform: template
+  sensors:
     shopping_list_sandia:
       friendly_name: "Sandía"
       value_template: >
