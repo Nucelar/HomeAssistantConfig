@@ -44,12 +44,12 @@
         store: "Lidl" 
         total_cost: >
           {{ (2.54 | float) * (states('sensor.shopping_list_yogures') | float) }}
-        units: "Yogures"
+        units: "packs"
         featured: "Favoritos"
 
 - platform: template
   sensors:
-    shopping_list_pienso_gato:
+    shopping_list_pienso_de_gato:
       friendly_name: "Pienso de gato"
       value_template: >
         {% set product = "Pienso de gato" %}
@@ -61,13 +61,13 @@
         category: "Animales" 
         store: "Kiwoko" 
         total_cost: >
-          {{ (2.54 | float) * (states('sensor.shopping_list_pienso_gato') | float) }}
+          {{ (2.54 | float) * (states('sensor.shopping_list_pienso_de_gato') | float) }}
         units: "kg"
         featured: "Favoritos"
 
 - platform: template
   sensors:
-    shopping_list_comida_humeda_gato:
+    shopping_list_comida_humeda_de_gato:
       friendly_name: "Comida húmeda de gato"
       value_template: >
         {% set product = "Comida húmeda de gato" %}
@@ -79,7 +79,7 @@
         category: "Animales" 
         store: "Kiwoko" 
         total_cost: >
-          {{ (2.54 | float) * (states('sensor.shopping_list_comida_humeda_gato') | float) }}
+          {{ (2.54 | float) * (states('sensor.shopping_list_comida_humeda_de_gato') | float) }}
         units: "latas"
         featured: "Favoritos"
 
@@ -100,6 +100,43 @@
           {{ (2.54 | float) * (states('sensor.shopping_list_curry') | float) }}
         units: "botes"
         featured: "Favoritos"
+
+- platform: template
+  sensors:
+    shopping_list_garam_masala:
+      friendly_name: "Garam Masala"
+      value_template: >
+        {% set product = "Garam Masala" %}
+        {% set products = (state_attr('sensor.shopping_list_items_to_buy','list') or '').split(',') %}
+        {%- set items = products | select('equalto', product) | list | length | string -%}
+        {{ items | int }}
+      entity_picture_template: "https://cdn-icons-png.flaticon.com/128/1704/1704104.png"
+      attribute_templates:
+        category: "Especias" 
+        store: "Lidl"
+        total_cost: >
+          {{ (2.54 | float) * (states('sensor.shopping_list_garam_masala') | float) }}
+        units: "botes"
+        featured: "Favoritos"
+
+- platform: template
+  sensors:
+    shopping_list_pastillas_de_lavavajillas:
+      friendly_name: "Pastillas de lavavajillas"
+      value_template: >
+        {% set product = "Pastillas de lavavajillas" %}
+        {% set products = (state_attr('sensor.shopping_list_items_to_buy','list') or '').split(',') %}
+        {%- set items = products | select('equalto', product) | list | length | string -%}
+        {{ items | int }}
+      entity_picture_template: "https://cdn-icons-png.flaticon.com/128/3629/3629638.png"
+      attribute_templates:
+        category: "Limpieza" 
+        store: "Carrefour"
+        total_cost: >
+          {{ (2.54 | float) * (states('sensor.shopping_list_pastillas_de_lavavajillas') | float) }}
+        units: "cajas"
+        featured: "Favoritos"
+
 
 - platform: template
   sensors:
